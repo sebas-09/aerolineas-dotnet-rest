@@ -1,0 +1,50 @@
+﻿@model Viajecitos_WebCliente.Models.CarritoCompraViewModel
+@{
+    ViewBag.Title = "Carrito de Compras";
+}
+<div class="container py-5">
+    <h2 class="mb-4">Carrito de compras</h2>
+    @if (Model.Vuelos == null || !Model.Vuelos.Any())
+    {
+        <div class="alert alert-info">No hay vuelos agregados. Busca y agrega vuelos para comprar.</div>
+        <a href="@Url.Action("Buscar", "Vuelos")" class="btn btn-primary">Buscar vuelos</a>
+    }
+    else
+    {
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th>Origen</th>
+                    <th>Destino</th>
+                    <th>Hora</th>
+                    <th>Valor</th>
+                    <th>Boletos</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Vuelos)
+                {
+                    <tr>
+                        <td>@item.CiudadOrigen</td>
+                        <td>@item.CiudadDestino</td>
+                        <td>@item.HoraSalida</td>
+                        <td>@item.Valor.ToString("C")</td>
+                        <td>@item.CantidadBoletos</td>
+                        <td>
+                            <form asp-action="QuitarVuelo" method="post" style="display:inline;">
+                                <input type="hidden" name="idVuelo" value="@item.IdVuelo" />
+                                <button type="submit" class="btn btn-danger btn-sm rounded-pill">Quitar</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="mb-3"><strong>Total carrito:</strong> @Model.TotalCarrito.ToString("C")</div>
+        <div class="d-flex justify-content-between mt-4">
+            <a href="@Url.Action("Buscar", "Vuelos")" class="btn btn-outline-secondary rounded-pill">Agregar más vuelos</a>
+            <a href="@Url.Action("Pago", "Carrito")" class="btn btn-success rounded-pill px-4">Proceder al pago</a>
+        </div>
+    }
+</div>

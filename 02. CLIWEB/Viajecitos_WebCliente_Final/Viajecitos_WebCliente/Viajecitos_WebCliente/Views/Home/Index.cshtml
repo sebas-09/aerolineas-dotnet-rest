@@ -1,0 +1,17 @@
+﻿@{
+    ViewBag.Title = "Inicio";
+}
+
+<div class="container py-5">
+    <div class="row align-items-center">
+        <div class="col-lg-6 text-center text-lg-start">
+            <h1 class="display-4 mb-3 text-primary">Viajecitos S.A.</h1>
+            <p class="lead">Compra tus boletos de avión de forma rápida y segura.</p>
+            <a href="@Url.Action("Login", "Account")" class="btn btn-success btn-lg mt-3">Iniciar Sesión</a>
+        </div>
+        <div class="col-lg-6 d-none d-lg-block">
+            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=cover&w=600&q=80"
+                 class="img-fluid rounded shadow-lg" alt="Avión" style="max-height:350px;">
+        </div>
+    </div>
+</div>

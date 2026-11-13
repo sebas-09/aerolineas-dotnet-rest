@@ -1,0 +1,35 @@
+﻿@{
+    ViewBag.Title = "Consultar Factura";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-primary text-white text-center py-4 rounded-top">
+                    <h3 class="mb-0 fw-bold"><i class="bi bi-receipt-cutoff me-2"></i>Consultar Factura</h3>
+                </div>
+                <div class="card-body p-4 bg-light">
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger text-center fw-semibold mb-4">@ViewBag.Error</div>
+                    }
+                    <form method="post" autocomplete="off">
+                        <div class="mb-4">
+                            <label for="idFactura" class="form-label fw-semibold">Ingrese el ID de factura</label>
+                            <input type="number" name="idFactura" id="idFactura" class="form-control form-control-lg rounded-pill" required min="1" placeholder="Ej: 12345" />
+                        </div>
+                        <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill mb-3 shadow">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                    </form>
+                    <div class="d-grid">
+                        <a asp-controller="Home" asp-action="Menu" class="btn btn-outline-secondary btn-lg rounded-pill">
+                            <i class="bi bi-arrow-left"></i> Regresar al menú
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

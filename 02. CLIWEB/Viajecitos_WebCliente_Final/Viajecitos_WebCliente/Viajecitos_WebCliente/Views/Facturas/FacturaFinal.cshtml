@@ -1,0 +1,94 @@
+﻿@model Viajecitos_WebCliente.Models.FacturaViewModel
+@{
+    ViewBag.Title = "Factura";
+}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-primary text-white text-center py-4 rounded-top">
+                    <h3 class="fw-bold mb-0"><i class="bi bi-receipt me-2"></i>Factura N° @Model.IdFactura</h3>
+                </div>
+                <div class="card-body bg-light p-4">
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Fecha:</strong><br />@Model.FechaFactura.ToString("yyyy-MM-dd HH:mm")
+                        </div>
+                        <div class="col-6">
+                            <strong>Empleado:</strong><br />@Model.Empleado
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Usuario:</strong><br />
+                            @Model.NombreUsuario @Model.ApellidoUsuario <br />
+                            <strong>Teléfono:</strong> @Model.TelefonoUsuario
+                        </div>
+                        <div class="col-6">
+                            <strong>Instrucción de pago:</strong><br />@Model.MetodoPago
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row mb-2">
+                        <div class="col-7">
+                            <strong>Descripción:</strong><br />@Model.Descripcion
+                        </div>
+                        <div class="col-5">
+                            <strong>Cantidad boletos:</strong> @Model.CantidadBoletos <br />
+                            <strong>Tarifa:</strong> @Model.TarifaUnitario.ToString("C")
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row mb-2">
+                        <div class="col-4"><strong>Subtotal:</strong></div>
+                        <div class="col-8">@Model.TotalParcial.ToString("C")</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-4"><strong>Impuesto (15%):</strong></div>
+                        <div class="col-8">@Model.Impuesto.ToString("C")</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4"><strong>Total:</strong></div>
+                        <div class="col-8 text-success fw-bold">@Model.TotalFinal.ToString("C")</div>
+                    </div>
+                    @if (Model.TablaAmortizacion != null && Model.TablaAmortizacion.Any())
+                    {
+                        <div class="mt-4">
+                            <h4 class="text-primary"><i class="bi bi-table"></i> Tabla de Amortización</h4>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead class="table-info">
+                                        <tr>
+                                            <th>Mes</th>
+                                            <th>Cuota</th>
+                                            <th>Interés</th>
+                                            <th>Amortización</th>
+                                            <th>Saldo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var fila in Model.TablaAmortizacion)
+                                        {
+                                            <tr>
+                                                <td>@fila.Mes</td>
+                                                <td>@fila.Cuota.ToString("C")</td>
+                                                <td>@fila.Interes.ToString("C")</td>
+                                                <td>@fila.Amortizacion.ToString("C")</td>
+                                                <td>@fila.Saldo.ToString("C")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                    <div class="d-grid mt-4">
+                        <a href="@Url.Action("Menu", "Home")" class="btn btn-outline-secondary btn-lg rounded-pill">
+                            <i class="bi bi-house-door"></i> Regresar al menú
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

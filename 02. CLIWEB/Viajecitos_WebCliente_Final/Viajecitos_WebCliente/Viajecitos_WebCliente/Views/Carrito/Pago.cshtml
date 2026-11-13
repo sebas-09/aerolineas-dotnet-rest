@@ -1,0 +1,140 @@
+﻿@model Viajecitos_WebCliente.Models.CarritoCompraViewModel
+@{
+    ViewBag.Title = "Datos de Pago y Amortización";
+}
+
+<div class="container py-5">
+    <h2 class="mb-4">Datos de Pago</h2>
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger fw-bold" role="alert">@ViewBag.Error</div>
+    }
+    <form asp-action="ConfirmarPago" method="post" autocomplete="off" id="formPago">
+        <input type="hidden" id="TotalCarritoOculto" value="@ViewBag.TotalCarrito" name="TotalCarrito" />
+        <div class="mb-3">
+            <label class="form-label">Tipo de Tarjeta</label>
+            <select asp-for="Pago.TipoTarjeta" class="form-select rounded-pill" id="Pago_TipoTarjeta" required>
+                <option value="">Seleccione...</option>
+                <option value="Crédito">Tarjeta de Crédito</option>
+                <option value="Débito">Tarjeta de Débito</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Nombre del titular</label>
+            <input asp-for="Pago.NombreTitular" class="form-control rounded-pill" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Número de tarjeta</label>
+            <input asp-for="Pago.NumeroTarjeta" class="form-control rounded-pill" maxlength="16" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Código de seguridad</label>
+            <input asp-for="Pago.CodigoSeguridad" class="form-control rounded-pill" maxlength="4" required />
+        </div>
+        <div id="diferidoDiv" style="display:none;">
+            <div class="mb-3">
+                <label class="form-label">¿Desea diferir?</label>
+                <select asp-for="Pago.Diferido" class="form-select rounded-pill" id="diferidoSelect">
+                    <option value="">Seleccione...</option>
+                    <option value="true">Sí</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+            <div class="mb-3" id="mesesDiferidoDiv" style="display:none;">
+                <label class="form-label">Meses a diferir</label>
+                <input asp-for="Pago.MesesDiferido" class="form-control rounded-pill" type="number" min="1" max="24" id="Pago_MesesDiferido" />
+            </div>
+            <div class="mb-3" id="tipoAmortizacionDiv" style="display:none;">
+                <label class="form-label">Tipo de Amortización</label>
+                <select asp-for="TipoAmortizacion" class="form-select rounded-pill" id="TipoAmortizacion">
+                    <option value="">Seleccione...</option>
+                    <option value="alemana">Alemana (cuotas fijas)</option>
+                    <option value="francesa">Francesa (amortización fija)</option>
+                </select>
+            </div>
+        </div>
+        <div id="tablaAmortizacionDiv" class="mt-4"></div>
+        <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill shadow mt-3">
+            <i class="bi bi-cash-stack"></i> Confirmar compra
+        </button>
+    </form>
+    <div class="d-grid mt-4">
+        <a href="@Url.Action("Index", "Carrito")" class="btn btn-outline-secondary rounded-pill">
+            <i class="bi bi-arrow-left"></i> Regresar al carrito
+        </a>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        function mostrarAmortizacion() {
+            var tipoTarjeta = document.getElementById("Pago_TipoTarjeta").value;
+            var diferido = document.getElementById("diferidoSelect")?.value;
+            var meses = document.getElementById("Pago_MesesDiferido")?.value;
+            var tipoAmortizacion = document.getElementById("TipoAmortizacion")?.value;
+            var total = parseFloat(document.getElementById("TotalCarritoOculto").value);
+
+            // Solo muestra la tabla si todo aplica
+            if (tipoTarjeta === "Crédito" && diferido === "true" && meses && tipoAmortizacion && total > 0) {
+                fetch('/api/Amortizacion', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ total: total, meses: parseInt(meses), tipo: tipoAmortizacion })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        var html = "<table class='table table-bordered'><thead><tr><th>Mes</th><th>Cuota</th><th>Interés</th><th>Amortización</th><th>Saldo</th></tr></thead><tbody>";
+                        data.forEach(function (fila) {
+                            html += "<tr><td>" + fila.mes + "</td><td>" + fila.cuota.toFixed(2) + "</td><td>" + fila.interes.toFixed(2) + "</td><td>" + fila.amortizacion.toFixed(2) + "</td><td>" + fila.saldo.toFixed(2) + "</td></tr>";
+                        });
+                        html += "</tbody></table>";
+                        document.getElementById("tablaAmortizacionDiv").innerHTML = html;
+                    });
+            } else {
+                document.getElementById("tablaAmortizacionDiv").innerHTML = "";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var tipoTarjeta = document.getElementById("Pago_TipoTarjeta");
+            var diferidoDiv = document.getElementById("diferidoDiv");
+            var mesesDiferidoDiv = document.getElementById("mesesDiferidoDiv");
+            var tipoAmortizacionDiv = document.getElementById("tipoAmortizacionDiv");
+            var diferidoSelect = document.getElementById("diferidoSelect");
+
+            function actualizarForm() {
+                var tipo = tipoTarjeta.value;
+                // Solo si es crédito muestra la opción de diferir
+                diferidoDiv.style.display = (tipo === "Crédito") ? "block" : "none";
+                if (tipo !== "Crédito") {
+                    mesesDiferidoDiv.style.display = "none";
+                    tipoAmortizacionDiv.style.display = "none";
+                    document.getElementById("tablaAmortizacionDiv").innerHTML = "";
+                }
+            }
+            tipoTarjeta.addEventListener("change", function () {
+                actualizarForm();
+                // Limpia campos si cambias de tipo
+                if (tipoTarjeta.value !== "Crédito") {
+                    if (diferidoSelect) diferidoSelect.value = "";
+                    document.getElementById("Pago_MesesDiferido").value = "";
+                    document.getElementById("TipoAmortizacion").value = "";
+                }
+            });
+
+            if (diferidoSelect) {
+                diferidoSelect.addEventListener("change", function () {
+                    var valor = diferidoSelect.value;
+                    mesesDiferidoDiv.style.display = (valor === "true") ? "block" : "none";
+                    tipoAmortizacionDiv.style.display = (valor === "true") ? "block" : "none";
+                    mostrarAmortizacion();
+                });
+            }
+
+            ["Pago_MesesDiferido", "TipoAmortizacion"].forEach(function (id) {
+                var el = document.getElementById(id);
+                if (el) el.addEventListener("change", mostrarAmortizacion);
+            });
+            actualizarForm();
+        });
+    </script>
+}

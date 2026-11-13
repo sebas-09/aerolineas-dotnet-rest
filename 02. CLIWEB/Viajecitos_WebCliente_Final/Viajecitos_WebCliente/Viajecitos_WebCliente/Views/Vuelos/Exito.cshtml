@@ -1,0 +1,30 @@
+﻿@model Viajecitos_WebCliente.Models.FacturaViewModel
+@{
+    ViewBag.Title = "Compra Exitosa";
+}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg text-center border-0">
+                <div class="card-header bg-success text-white py-4 rounded-top">
+                    <h3 class="fw-bold"><i class="bi bi-emoji-smile me-2"></i>¡Compra realizada con éxito!</h3>
+                </div>
+                <div class="card-body bg-light">
+                    <p class="display-6 my-3">Su boleto ha sido comprado.</p>
+                    <p>Su <strong>número de factura</strong> es: <span class="fw-bold">@Model.IdFactura</span></p>
+                    <div class="d-grid gap-3 mt-4">
+                        <a asp-controller="Facturas" asp-action="Detalle" asp-route-id="@Model.IdFactura" class="btn btn-primary btn-lg rounded-pill">
+                            <i class="bi bi-receipt"></i> Ver factura
+                        </a>
+                        <a asp-controller="Vuelos" asp-action="Buscar" class="btn btn-outline-success btn-lg rounded-pill">
+                            <i class="bi bi-cart-plus"></i> Realizar otra compra
+                        </a>
+                        <a asp-controller="Home" asp-action="Menu" class="btn btn-outline-secondary btn-lg rounded-pill">
+                            <i class="bi bi-house-door"></i> Regresar al inicio
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

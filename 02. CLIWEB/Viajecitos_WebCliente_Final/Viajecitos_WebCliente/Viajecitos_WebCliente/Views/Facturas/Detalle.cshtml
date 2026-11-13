@@ -1,0 +1,67 @@
+﻿@model Viajecitos_WebCliente.Models.FacturaViewModel
+@{
+    ViewBag.Title = "Factura";
+}
+<div class="container mt-5 mb-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-primary text-white text-center py-4 rounded-top">
+                    <h3 class="fw-bold mb-0"><i class="bi bi-receipt me-2"></i>Factura N° @Model.IdFactura</h3>
+                </div>
+                <div class="card-body bg-light p-4">
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Fecha:</strong><br />@Model.FechaFactura.ToString("yyyy-MM-dd HH:mm")
+                        </div>
+                        <div class="col-6">
+                            <strong>Empleado:</strong><br />@Model.Empleado
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Usuario:</strong><br />
+                            @Model.NombreUsuario @Model.ApellidoUsuario <br />
+                            <strong>Teléfono:</strong> @Model.TelefonoUsuario
+                        </div>
+                        <div class="col-6">
+                            <strong>Instrucción de pago:</strong><br />@Model.MetodoPago
+                        </div>
+                    </div>
+
+                    <hr />
+                    <div class="row mb-2">
+                        <div class="col-7">
+                            <strong>Descripción:</strong><br />@Model.Descripcion
+                        </div>
+                        <div class="col-5">
+                            <strong>Cantidad boletos:</strong> @Model.CantidadBoletos <br />
+                            <strong>Tarifa:</strong> @Model.TarifaUnitario.ToString("C")
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row mb-2">
+                        <div class="col-4"><strong>Subtotal:</strong></div>
+                        <div class="col-8">@Model.TotalParcial.ToString("C")</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-4"><strong>Impuesto (15%):</strong></div>
+                        <div class="col-8">@Model.Impuesto.ToString("C")</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4"><strong>Total:</strong></div>
+                        <div class="col-8 text-success fw-bold">@Model.TotalFinal.ToString("C")</div>
+                    </div>
+                    <div class="d-grid mt-4">
+                        <a asp-controller="Home" asp-action="Menu" class="btn btn-outline-secondary btn-lg rounded-pill">
+                            <i class="bi bi-arrow-left"></i> Regresar al menú
+                        </a>
+                        <a asp-action="DescargarPdf" asp-route-id="@Model.IdFactura" class="btn btn-outline-dark btn-lg rounded-pill mt-3">
+                            <i class="bi bi-file-earmark-pdf"></i> Descargar PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

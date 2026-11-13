@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+.vs/
+**/.vs/
+*.user
+*.pfx
+*.p12
+.env
+appsettings.Local.json
+**/PublishProfiles/

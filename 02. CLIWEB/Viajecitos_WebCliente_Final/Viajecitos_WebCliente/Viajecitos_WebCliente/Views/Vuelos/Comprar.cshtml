@@ -1,0 +1,116 @@
+﻿@model Viajecitos_WebCliente.Models.CompraViewModel
+
+@{
+    ViewBag.Title = "Comprar boleto";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-primary text-white text-center py-4 rounded-top">
+                    <h3 class="mb-0 fw-bold"><i class="bi bi-credit-card-2-front me-2"></i>Completa los datos de compra</h3>
+                </div>
+                <div class="card-body bg-light">
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger text-center fw-semibold mb-3">@ViewBag.Error</div>
+                    }
+                    <form asp-action="Comprar" method="post" id="formCompra">
+                        <input type="hidden" asp-for="IdVuelo" />
+                        <input type="hidden" asp-for="IdUsuario" />
+
+                        <div class="mb-3">
+                            <label asp-for="CantidadBoletos" class="form-label fw-semibold">Cantidad de boletos</label>
+                            <input asp-for="CantidadBoletos" class="form-control rounded-pill" type="number" min="1" value="1" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Pago.TipoTarjeta" class="form-label fw-semibold">Método de pago</label>
+                            <select asp-for="Pago.TipoTarjeta" class="form-select rounded-pill" id="tipoTarjeta" required>
+                                <option value="">Seleccione...</option>
+                                <option value="Credito">Tarjeta de Crédito</option>
+                                <option value="Debito">Tarjeta de Débito</option>
+                            </select>
+                        </div>
+
+                        <div id="seccionPago" style="display:none;">
+                            <div class="mb-3">
+                                <label asp-for="Pago.NombreTitular" class="form-label fw-semibold">Nombre del titular</label>
+                                <input asp-for="Pago.NombreTitular" class="form-control rounded-pill" required />
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Pago.NumeroTarjeta" class="form-label fw-semibold">Número de tarjeta</label>
+                                <input asp-for="Pago.NumeroTarjeta" class="form-control rounded-pill" maxlength="16" required />
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Pago.CodigoSeguridad" class="form-label fw-semibold">Código de seguridad</label>
+                                <input asp-for="Pago.CodigoSeguridad" class="form-control rounded-pill" maxlength="4" required />
+                            </div>
+                        </div>
+
+                        <!-- Sección solo para tarjeta de crédito -->
+                        <div id="seccionCredito" style="display:none;">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">¿Desea diferir?</label>
+                                <select asp-for="Pago.Diferido" class="form-select rounded-pill" id="diferidoCredito">
+                                    <option value="">Seleccione...</option>
+                                    <option value="true">Sí</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                            <div class="mb-3" id="mesesDiferidoDiv" style="display:none;">
+                                <label asp-for="Pago.MesesDiferido" class="form-label fw-semibold">Meses a diferir</label>
+                                <input asp-for="Pago.MesesDiferido" class="form-control rounded-pill" type="number" min="1" max="24" />
+                            </div>
+                        </div>
+
+                        <!-- Sección solo para tarjeta de débito -->
+
+
+                        <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill shadow mt-2">
+                            <i class="bi bi-check2-circle"></i> Pagar
+                        </button>
+                    </form>
+                </div>
+                <div class="card-footer bg-white text-center">
+                    <a asp-controller="Vuelos" asp-action="Buscar" class="btn btn-outline-secondary btn-lg rounded-pill">
+                        <i class="bi bi-arrow-left"></i> Regresar a búsqueda
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var tipoTarjeta = document.getElementById("tipoTarjeta");
+            var seccionPago = document.getElementById("seccionPago");
+            var seccionCredito = document.getElementById("seccionCredito");
+            var seccionDebito = document.getElementById("seccionDebito");
+            var diferidoCredito = document.getElementById("diferidoCredito");
+            var mesesDiferidoDiv = document.getElementById("mesesDiferidoDiv");
+
+            function actualizarForm() {
+                var tipo = tipoTarjeta.value;
+                seccionPago.style.display = tipo ? "block" : "none";
+                seccionCredito.style.display = tipo === "Credito" ? "block" : "none";
+                seccionDebito.style.display = tipo === "Debito" ? "block" : "none";
+            }
+
+            tipoTarjeta.addEventListener("change", function () {
+                actualizarForm();
+            });
+
+            if (diferidoCredito) {
+                diferidoCredito.addEventListener("change", function () {
+                    mesesDiferidoDiv.style.display = (diferidoCredito.value === "true") ? "block" : "none";
+                });
+            }
+
+            actualizarForm();
+        });
+    </script>
+}

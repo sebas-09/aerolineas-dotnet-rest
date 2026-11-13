@@ -1,0 +1,131 @@
+﻿@model Viajecitos_WebCliente.Models.VuelosBuscarViewModel
+@{
+    ViewBag.Title = "Buscar vuelos";
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var origenSelect = document.getElementById("Origen");
+            var destinoSelect = document.getElementById("Destino");
+
+            origenSelect.addEventListener("change", function () {
+                var origen = origenSelect.value;
+                destinoSelect.innerHTML = "<option value=''>Cargando...</option>";
+
+                if (origen) {
+                    fetch('/Vuelos/GetDestinos?origen=' + origen)
+                        .then(response => response.json())
+                        .then(destinos => {
+                            destinoSelect.innerHTML = "<option value=''>Seleccione...</option>";
+                            destinos.forEach(function (destino) {
+                                var opt = document.createElement("option");
+                                opt.value = destino;
+                                opt.text = destino;
+                                destinoSelect.appendChild(opt);
+                            });
+                        });
+                } else {
+                    destinoSelect.innerHTML = "<option value=''>Seleccione...</option>";
+                }
+            });
+        });
+    </script>
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-primary text-white text-center py-4 rounded-top">
+                    <h3 class="mb-0 fw-bold"><i class="bi bi-search me-2"></i>Buscar vuelo</h3>
+                </div>
+                <div class="card-body bg-light">
+                    <form asp-action="Buscar" method="post" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Origen</label>
+                            <select asp-for="Origen" class="form-select rounded-pill" asp-items="Model.Origenes" id="Origen"></select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Destino</label>
+                            <select asp-for="Destino" class="form-select rounded-pill" asp-items="Model.Destinos" id="Destino">
+                                <option value="">Seleccione...</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Fecha de salida</label>
+                            <input asp-for="Fecha" class="form-control rounded-pill" type="date" />
+                        </div>
+                        <div class="col-12 text-end">
+                            <button type="submit" class="btn btn-success btn-lg rounded-pill shadow">
+                                <i class="bi bi-search"></i> Buscar vuelos
+                            </button>
+                        </div>
+                    </form>
+                    @if (Model.BuscarRealizada)
+                    {
+                        if (Model.Vuelos != null && Model.Vuelos.Any())
+                        {
+                            <hr />
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-primary">
+                                        <tr>
+                                            <th>Origen</th>
+                                            <th>Destino</th>
+                                            <th>Hora</th>
+                                            <th>Valor</th>
+                                            <th>Boletos</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var vuelo in Model.Vuelos)
+                                        {
+                                            <tr>
+                                                <td>@vuelo.CiudadOrigen</td>
+                                                <td>@vuelo.CiudadDestino</td>
+                                                <td>@vuelo.HoraSalida.ToString("yyyy-MM-dd HH:mm")</td>
+                                                <td>@vuelo.Valor.ToString("C")</td>
+                                                <td>
+                                                    <form asp-controller="Carrito" asp-action="AgregarVuelo" method="post" class="d-flex">
+                                                        <input type="hidden" name="IdVuelo" value="@vuelo.IdVuelo" />
+                                                        <input type="hidden" name="CiudadOrigen" value="@vuelo.CiudadOrigen" />
+                                                        <input type="hidden" name="CiudadDestino" value="@vuelo.CiudadDestino" />
+                                                        <input type="hidden" name="Valor" value="@vuelo.Valor" />
+                                                        <input type="hidden" name="HoraSalida" value="@vuelo.HoraSalida.ToString("yyyy-MM-dd HH:mm")" />
+                                                        <input type="number" name="CantidadBoletos" value="1" min="1" class="form-control form-control-sm rounded-pill" style="width:70px;" />
+                                                        <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill ms-2">
+                                                            <i class="bi bi-cart-plus"></i> Agregar
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                                <td>
+                                                    <a asp-controller="Carrito" asp-action="Index" class="btn btn-outline-success btn-sm rounded-pill">
+                                                        <i class="bi bi-bag"></i> Ver carrito
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else if (Model.Vuelos != null)
+                        {
+                            <hr />
+                            <div class="alert alert-warning text-center mt-4 fw-bold">
+                                <i class="bi bi-exclamation-circle"></i> No existen vuelos en esa fecha.
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="card-footer bg-white text-center">
+                    <a asp-controller="Home" asp-action="Menu" class="btn btn-outline-secondary btn-lg rounded-pill">
+                        <i class="bi bi-arrow-left"></i> Regresar al menú
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
